@@ -59,8 +59,9 @@ class Solution {
      * @return the fullc filled sudoku grid.
      */
     public static int[][] solve(int[][] grid) {
-        initialize(grid);                
-        boolean solved = search(grid, 0, 0);
+      
+        int n = grid.length;
+        boolean solved = search(grid, 0, 0, n);
         if(solved) {
             return grid;
         } else {
@@ -76,34 +77,25 @@ class Solution {
     r - row index
     c - column index
 */
-    public static boolean search(int[][] grid, int r, int c) {
+    public static boolean search(int[][] grid, int r, int c, int n) {
         if (r > 8) return true;
         
         int[] coord;
         if (grid[r][c] != -1) {
-            coord = get_next(r, c); 
+            coord = get_next(r, c, n); 
             r = coord[0];
             c = coord[1];
-            return search(grid, r, c);
+            return search(grid, r, c, n);
         }
 
-        List<Integer> candidates = generate_candidates(grid, r, c);
+        List<Integer> candidates = generate_candidates(grid, r, c, n);
         for(int v : candidates) {
             grid[r][c] = v;
-            int b = (c / 3) + 3 * (r / 3);
-            column_has_value[c][v] = true;
-            row_has_value[r][v] = true;
-            box_has_value[b][v] = true;
-            coord = get_next(r, c);
+            coord = get_next(r, c, n);
             int R = coord[0];
             int C = coord[1];
-            if (search(grid, R, C)) return true;
-            else {
-                column_has_value[c][v] = false;
-                row_has_value[r][v] = false;
-                box_has_value[b][v] = false;
-                grid[r][c] = -1;
-            }
+            if (search(grid, R, C, n)) return true;
+            else grid[r][c] = -1;
         }
 
         return false;
@@ -111,23 +103,46 @@ class Solution {
     
     // r -> row
     // c -> col
-    public static int[] get_next(int r, int c) {
+    public static int[] get_next(int r, int c, int n) {
         int[] res = new int[2];
         res[0] = r; 
-        if(c >= 8) res[0] += 1;
-        res[1] = (c + 1) % 9;
+        if(c >= n-1) res[0] += 1;
+        res[1] = (c + 1) % n;
 
         return res;
     }
 
     // <!> candidates.remove IS OVERLOADED -> might interpret the value as index and not work correctly <!>
-    public static List<Integer> generate_candidates(int[][] grid, int r, int c) {
+    public static List<Integer> generate_candidates(int[][] grid, int r, int c, int n) {
         List<Integer> candidates = new LinkedList<>();
+        for(int i = 0; i < n; i++) {
+          candidates.add(i+1);
+        }
 
-        for(int v = 1; v < 10; v++) {
+        for(int i = 0; i < n; i++) {
 
-            int b = (c / 3) + 3 * (r / 3);
-            if(!column_has_value[c][v] && !row_has_value[r][v] && !box_has_value[b][v]) candidates.add(v);   
+            // Check values in a row
+            Integer value = grid[i][c];
+            if(value != -1) candidates.remove(value);
+            
+            // Check values in a column
+            value = grid[r][i];
+            if(value != -1) {candidates.remove(value);}
+        }
+
+        // Check values in a box
+        // Compute top-left corner cooordinates of the box
+        int box_size = (int) Math.sqrt(n);
+        int x = (r / box_size) * box_size;
+        int y = (c / box_size) * box_size;
+
+        for (int i = x; i < x + box_size; i++) {
+            for (int j = y; j < y + box_size; j++) {
+                Integer value = grid[i][j];
+                if(value != -1) {
+                    candidates.remove(value);
+                }
+            }
         }
 
         return candidates;
