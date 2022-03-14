@@ -1,11 +1,6 @@
 import java.util.*;
 
 class Solution {
-
-    static boolean[][] column_has_value = new boolean[9][10];
-    static boolean[][] row_has_value = new boolean[9][10];
-    static boolean[][] box_has_value = new boolean[9][10];
-
     public static void main(String[] args) {
         int[][] grid_test = new int[9][9];
         int[][] grid = {
@@ -37,19 +32,6 @@ class Solution {
             System.out.println();
         }
     }
-    
-    private static void initialize(int[][] grid) {
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                int v = grid[i][j];
-                if (v == -1) continue;
-                int b = (j / 3) + 3 * (i / 3);
-                column_has_value[j][v] = true;
-                row_has_value[i][v] = true;
-                box_has_value[b][v] = true;
-            }
-        }
-    } 
 
     static final List<Integer> VALUES = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
