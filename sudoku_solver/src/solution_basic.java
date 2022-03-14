@@ -30,9 +30,9 @@ class Solution {
 
         
         
-        for(int i = 0; i < grid_test.length; i++) {
-            for(int j = 0; j < grid_test[0].length; j++) {
-                System.out.print(grid_test[i][j] + " ");
+        for(int i = 0; i < grid.length; i++) {
+            for(int j = 0; j < grid[0].length; j++) {
+                System.out.print(grid[i][j] + " ");
             }
             System.out.println();
         }
